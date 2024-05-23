@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+{% include 'admin_nav.html' %}
+<h1>Appoinment Booking Details List</h1>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Patient's name</th>
+      <th>Age</th>
+      <th>Date of birth</th>
+      <th>Kind of symptoms</th>
+      <th>District</th>
+      <th>Place</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in kr %}
+    <tr>
+      <td>{{i.name}}</td>
+      <td>{{i.age}}</td>
+      <td>{{i.birthdate}}</td>
+      <td>{{i.symptoms}}</td>
+      <td>{{i.district}}</td>
+      <td>{{i.place}}</td>
+      <td><a href="/edit_product/{{i.id}}">Edit the data</a></td>
+      <td><a href="/delete_product/{{i.id}}">Delete the data</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<p>&larr; Drag window (in editor or full page view) to see the effect. &rarr;</p>
+</body>
+<script>
+  // Responsive table method using display:block and data attributes
+// Thanks to @leefroese for suggestion about data attributes
+</script>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+.borderless td, .borderless th {
+    border: none !important;;
+}
+
+.border-line {
+  border-top: solid #ddd 1px;
+}
+
+.text-bold {
+  font-weight:bold;
+}
+
+.enrollment-review-toggle::before {
+  font-family: 'Glyphicons Halflings';
+  content: "\e113";
+}
+
+.collapsed .enrollment-review-toggle::before {
+  font-family: 'Glyphicons Halflings';
+  content: "\e114";
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+<body>
+{% include 'navbar.html' %}
+<div class="container">
+  <div class="panel panel-default">
+    <div>
+       <form id="pay" method="POST" action="/paymenthandler/">{% csrf_token %}
+      <div class="row">
+        <div class=col-sm-12>
+          <table class="table borderless">
+
+
+
+
+            <thead>
+              <tr>
+                <th scope="col">Order Summery</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Subtotal</td>
+                <td class="text-right">{{wo.price}}</td>
+              </tr>
+              <tr>
+                <td>Shipping</td>
+                <td class="text-right">50.00</td>
+              </tr>
+              <tr class="text-bold">
+                <td>Total</td>
+                <td class="text-right">{{total}}</td>
+              </tr>
+              <input type="hidden" name="Amount" value="{{razorpay_amount}}">
+          <input type="hidden" name="price" value="{{wo.price}}">
+              <input type="hidden" name="wo" value="{{wo.id}}">
+              <input type="hidden" name="total" value="{{total}}">
+
+          <input type="hidden" name="order_id" value="{{razorpay_order_id}}">
+
+            <input type="hidden" name="payment_id" value="{{payment_id}}">
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="rzp-button1" type="submit" >Make Purchase</button>
+      </form>
+      <div class="row">
+        <div class="col-sm-12" data-toggle="collapse" data-target="#enrollment-review-content">
+          <div class="border-line">
+            <div class="enrollment-review-toggle">
+              <span>Review your enrollment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-body collapse" id="enrollment-review-content">
+      Panel content
+    </div>
+  </div>
+</div>
+
+<!-- Razorpay's Javascript code. -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+<script>
+    var options = {
+        "key": "{{ razorpay_merchant_key }}", // Enter the Key ID generated from the Dashboard
+        "amount": "{{ razorpay_amount }}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        "currency": "{{ currency }}",
+        "name": "test",
+        "description": "Test Transaction",
+        "image": "https://example.com/your_logo",
+        "order_id": "{{razorpay_order_id}}", //This is a sample Order ID. Pass the id obtained in the response of Step 1
+        "handler": function (response){
+            $('#pay input[name=payment_id]').val(response.razorpay_payment_id)
+            document.getElementById('pay').submit();
+        },
+        "prefill": {
+            "name": "",
+            "email": "",
+            "contact": ""
+        },
+        "notes": {
+            "address": "Razorpay Corporate Office"
+        },
+        "theme": {
+            "color": "rgb(104,222,238)"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response){
+        $('#myModal').modal();
+    });
+    document.getElementById('rzp-button1').onclick = function(e){
+
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+
+</body>
+</html>
